@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- 🌐 Meta & Styles -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PaigonAi</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- 🔝 Navigation Bar -->
+  <header class="navbar">
+<a href="index.html" class="logo">PaigonAi</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Games</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </nav>
+    <div class="profile-button">
+      <button onclick="toggleSidebar()">Profile/Login</button>
+    </div>
+  </header>
+
+  <!-- 🧠 Main Content -->
+  <main class="main-content">
+    <h1>Welcome to PaigonAi</h1>
+    <p>Brain-boosting games coming soon. Play to win, think to grow.</p>
+
+    <!-- 🎮 Game Section -->
+    <section class="game-section">
+      <h2>Featured Games (Coming Soon)</h2>
+      <div class="game-grid">
+        <div class="game-card">Game 1</div>
+        <div class="game-card">Game 2</div>
+        <div class="game-card">Game 3</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 👤 Sliding Profile Sidebar -->
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h2>My Profile</h2>
+      <button onclick="toggleSidebar()">✕</button>
+    </div>
+    <p>This is your profile panel. Add login form or stats here later!</p>
+  </div>
+
+  <!-- 🌘 Background Overlay -->
+  <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
+
+  <!-- 🧠 Sidebar Toggle Script -->
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('overlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
