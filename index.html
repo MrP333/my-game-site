@@ -47,7 +47,33 @@
       <h2>My Profile</h2>
       <button onclick="toggleSidebar()">✕</button>
     </div>
-    <p>This is your profile panel. Add login form or stats here later!</p>
+    <div class="auth-toggle">
+  <button id="show-login" class="active">Login</button>
+  <button id="show-signup">Sign Up</button>
+</div>
+
+<form class="login-form" id="login-form">
+  <label for="login-email">Email</label>
+  <input type="email" id="login-email" placeholder="you@example.com" required>
+
+  <label for="login-password">Password</label>
+  <input type="password" id="login-password" placeholder="••••••••" required>
+
+  <button type="submit">Login</button>
+</form>
+
+<form class="login-form" id="signup-form" style="display: none;">
+  <label for="signup-email">Email</label>
+  <input type="email" id="signup-email" placeholder="you@example.com" required>
+
+  <label for="signup-password">Password</label>
+  <input type="password" id="signup-password" placeholder="Create a password" required>
+
+  <label for="signup-confirm">Confirm Password</label>
+  <input type="password" id="signup-confirm" placeholder="Confirm password" required>
+
+  <button type="submit">Sign Up</button>
+</form>
   </div>
 
   <!-- 🌘 Background Overlay -->
@@ -62,5 +88,33 @@
       overlay.classList.toggle('active');
     }
   </script>
+  <script>
+  document.querySelector('.login-form')?.addEventListener('submit', function (e) {
+    e.preventDefault();
+    alert('Login submitted! (No backend yet)');
+  });
+</script>
+<script>
+  // Toggle login/signup forms
+  const loginBtn = document.getElementById('show-login');
+  const signupBtn = document.getElementById('show-signup');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+
+  loginBtn?.addEventListener('click', () => {
+    loginForm.style.display = 'flex';
+    signupForm.style.display = 'none';
+    loginBtn.classList.add('active');
+    signupBtn.classList.remove('active');
+  });
+
+  signupBtn?.addEventListener('click', () => {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'flex';
+    signupBtn.classList.add('active');
+    loginBtn.classList.remove('active');
+  });
+</script>
+
 </body>
 </html>
