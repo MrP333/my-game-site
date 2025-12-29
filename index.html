@@ -12,7 +12,7 @@
 
   <!-- 🔝 Navigation Bar -->
   <header class="navbar">
-<a href="index.html" class="logo">PaigonAi</a>
+    <a href="index.html" class="logo">PaigonAi</a>
     <nav>
       <ul class="nav-links">
         <li><a href="#">Home</a></li>
@@ -20,8 +20,9 @@
         <li><a href="#">Leaderboard</a></li>
       </ul>
     </nav>
-    <div class="profile-button">
-      <button onclick="toggleSidebar()">Profile/Login</button>
+    <div class="auth-buttons">
+      <button id="open-login">Login</button>
+      <button id="open-register">Register</button>
     </div>
   </header>
 
@@ -43,80 +44,131 @@
     </section>
   </main>
 
-  <!-- 👤 Sliding Profile Sidebar -->
-  <div id="sidebar" class="sidebar">
-    <div class="sidebar-header">
-      <h2>My Profile</h2>
-      <button onclick="toggleSidebar()">✕</button>
-    </div>
-    <div class="auth-toggle">
-  <button id="show-login" class="active">Login</button>
-  <button id="show-signup">Sign Up</button>
-</div>
+ <script type="module">
+  // Import Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-<form class="login-form" id="login-form">
-  <label for="login-email">Email</label>
-  <input type="email" id="login-email" placeholder="you@example.com" required>
+  // Your Firebase config
+  const firebaseConfig = {
+    apiKey: "AIzaSyAIEYryVjB1gX2bzXWERNI0udfjHXuXwzc",
+    authDomain: "paigonco.firebaseapp.com",
+    projectId: "paigonco",
+    storageBucket: "paigonco.appspot.com",
+    messagingSenderId: "879434208536",
+    appId: "1:879434208536:web:5ff633fc0534c3f1d73a6d"
+  };
 
-  <label for="login-password">Password</label>
-  <input type="password" id="login-password" placeholder="••••••••" required>
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
 
-  <button type="submit">Login</button>
-</form>
-
-<form class="login-form" id="signup-form" style="display: none;">
-  <label for="signup-email">Email</label>
-  <input type="email" id="signup-email" placeholder="you@example.com" required>
-
-  <label for="signup-password">Password</label>
-  <input type="password" id="signup-password" placeholder="Create a password" required>
-
-  <label for="signup-confirm">Confirm Password</label>
-  <input type="password" id="signup-confirm" placeholder="Confirm password" required>
-
-  <button type="submit">Sign Up</button>
-</form>
-  </div>
-
-  <!-- 🌘 Background Overlay -->
-  <div id="overlay" class="overlay" onclick="toggleSidebar()"></div>
-
-  <!-- 🧠 Sidebar Toggle Script -->
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('overlay');
-      sidebar.classList.toggle('active');
-      overlay.classList.toggle('active');
-    }
-  </script>
-  <script>
-  document.querySelector('.login-form')?.addEventListener('submit', function (e) {
+  // 🔐 Register handler
+  const registerForm = document.getElementById('register-form');
+  registerForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert('Login submitted! (No backend yet)');
+    const email = document.getElementById('register-email').value;
+    const password = document.getElementById('register-password').value;
+    const confirm = document.getElementById('register-confirm').value;
+
+    if (password !== confirm) {
+      alert('Passwords do not match!');
+      return;
+    }
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      alert(`Welcome, ${email}! Account created.`);
+      registerForm.reset();
+    } catch (error) {
+      alert(error.message);
+    }
   });
-</script>
-<script>
-  // Toggle login/signup forms
-  const loginBtn = document.getElementById('show-login');
-  const signupBtn = document.getElementById('show-signup');
+
+  // 🔐 Login handler
   const loginForm = document.getElementById('login-form');
-  const signupForm = document.getElementById('signup-form');
+  loginForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-  loginBtn?.addEventListener('click', () => {
-    loginForm.style.display = 'flex';
-    signupForm.style.display = 'none';
-    loginBtn.classList.add('active');
-    signupBtn.classList.remove('active');
-  });
-
-  signupBtn?.addEventListener('click', () => {
-    loginForm.style.display = 'none';
-    signupForm.style.display = 'flex';
-    signupBtn.classList.add('active');
-    loginBtn.classList.remove('active');
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      alert(`Welcome back, ${email}!`);
+      loginForm.reset();
+    } catch (error) {
+      alert(error.message);
+    }
   });
 </script>
+
+  // 🔐 LOGIN
+  document.getElementById('login-form')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        alert("✅ Logged in!");
+        closeModal();
+      })
+      .catch((error) => {
+        alert("❌ " + error.message);
+      });
+  });
+  </script>
+
+<script>
+  const modal = document.getElementById('auth-modal');
+  const loginStep = document.getElementById('auth-step-login');
+  const registerStep = document.getElementById('auth-step-register');
+
+  document.getElementById('open-login')?.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    loginStep.classList.remove('hidden');
+    registerStep.classList.add('hidden');
+  });
+
+  document.getElementById('open-register')?.addEventListener('click', () => {
+    modal.classList.remove('hidden');
+    loginStep.classList.add('hidden');
+    registerStep.classList.remove('hidden');
+  });
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    loginStep.classList.remove('hidden');
+    registerStep.classList.add('hidden');
+  }
+</script>
+
+<!-- 🔒 Auth Modal -->
+<div id="auth-modal" class="modal hidden">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+
+    <div id="auth-step-login" class="auth-step">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
+
+    <div id="auth-step-register" class="auth-step hidden">
+      <h2>Create an Account</h2>
+      <form id="register-form">
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="text" id="register-username" placeholder="Username" required>
+        <input type="password" id="register-password" placeholder="Password" required>
+        <input type="password" id="register-confirm" placeholder="Confirm Password" required>
+        <button type="submit">Register</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
