@@ -1,41 +1,38 @@
-/* =========================
-   🌑 GLOBAL
-========================= */
+/* ============ Base ============ */
 :root{
-  --bg: #0b0f0d;
-  --panel: #0f1a22;
-  --panel2: #101f2a;
-  --line: rgba(255,255,255,0.08);
+  --bg: #0f0f0f;
+  --panel: #121a1f;
+  --panel-2: #0f171c;
+  --border: rgba(255,255,255,.10);
   --text: #ffffff;
-  --muted: rgba(255,255,255,0.70);
+  --muted: rgba(255,255,255,.75);
+  --muted2: rgba(255,255,255,.55);
   --green: #00ff88;
-  --green2:#00cc6e;
-  --blueBtn:#1976D2;
+  --green2: #00cc6e;
+  --shadow: 0 18px 60px rgba(0,0,0,.55);
 }
 
 * { box-sizing: border-box; }
 
 body{
-  margin:0;
+  margin: 0;
   font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-  background-color: #0f0f0f;
+  background-color: var(--bg);
   background-image: url("bg-texture.png");
   background-repeat: repeat;
   background-size: auto;
   color: var(--text);
 }
 
-body.no-scroll{ overflow:hidden; }
+.no-scroll { overflow: hidden; }
 
-/* =========================
-   🔝 NAVBAR
-========================= */
+/* ============ Navbar ============ */
 .navbar{
   display:flex;
-  justify-content:space-between;
+  justify-content: space-between;
   align-items:center;
   padding: 15px 30px;
-  background-color: rgba(10,10,10,0.85);
+  background-color: rgba(10,10,10,.85);
   border-bottom: 1px solid #222;
 }
 
@@ -49,131 +46,117 @@ body.no-scroll{ overflow:hidden; }
 .nav-links{
   list-style:none;
   display:flex;
-  gap:25px;
+  gap: 25px;
   padding:0;
   margin:0;
 }
 
 .nav-links a{
-  color: #fff;
+  color: white;
   text-decoration:none;
-  font-weight:600;
-  opacity:0.9;
-  transition: opacity .2s ease, color .2s ease;
+  font-weight: 500;
+  transition: color .2s ease;
 }
 
-.nav-links a:hover{
-  color: var(--green);
-  opacity:1;
-}
+.nav-links a:hover{ color: var(--green); }
 
-.auth-buttons{
-  display:flex;
-  gap:10px;
-}
-
-/* Buttons */
+/* ============ Buttons ============ */
 .btn{
   border: 1px solid transparent;
-  border-radius: 8px;
-  padding: 8px 14px;
-  cursor:pointer;
-  font-weight:800;
-  transition: transform .15s ease, opacity .2s ease, background-color .2s ease, border-color .2s ease;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
 }
 
 .btn:active{ transform: translateY(1px); }
-.btn-wide{ width:100%; padding: 12px 14px; border-radius:10px; }
+
+.btn-wide{ width: 100%; }
 
 .btn-primary{
   background: var(--green);
-  color: #07120b;
+  color: #0b0f0d;
 }
+
 .btn-primary:hover{ background: var(--green2); }
 
 .btn-ghost{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.10);
-  color:#fff;
+  background: rgba(255,255,255,.07);
+  color: white;
+  border-color: rgba(255,255,255,.10);
 }
-.btn-ghost:hover{ opacity:0.95; }
+
+.btn-ghost:hover{ background: rgba(255,255,255,.10); }
 
 .btn-alt{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.10);
-  color:#fff;
+  background: rgba(255,255,255,.06);
+  color: white;
+  border-color: rgba(255,255,255,.10);
 }
-.btn-alt:hover{ border-color: rgba(255,255,255,0.18); }
 
-.btn-icon{
-  width:18px; height:18px;
-  display:inline-flex;
-  margin-right:10px;
-  vertical-align: middle;
-}
-.btn-icon svg{ width:18px; height:18px; display:block; }
+.btn-alt:hover{ background: rgba(255,255,255,.10); }
 
-/* =========================
-   🧠 MAIN
-========================= */
+.auth-buttons{ display:flex; gap: 10px; }
+
+/* ============ Main Content ============ */
 .main-content{
   text-align:center;
   padding: 60px 20px;
 }
 
 .main-content h1{
-  font-size: 2.5rem;
-  margin:0 0 10px 0;
+  font-size: 2.6rem;
+  margin: 0 0 10px;
 }
 
 .main-content p{
-  margin:0;
   font-size: 1.1rem;
-  color: rgba(255,255,255,0.75);
+  color: #cfcfcf;
+  margin: 0;
 }
 
-/* =========================
-   🎮 GAMES
-========================= */
+/* ============ Games ============ */
 .game-section{ margin-top: 40px; }
 
 .game-grid{
   display:grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 18px;
+  gap: 20px;
   padding: 20px;
-  max-width: 900px;
+  max-width: 880px;
   margin: 0 auto;
 }
 
 .game-card{
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
-  padding: 26px;
-  border-radius: 12px;
+  background: rgba(255,255,255,.05);
+  border: 1px solid #333;
+  padding: 28px;
+  border-radius: 14px;
+  text-align:center;
+  font-weight: 800;
+  color: white;
   text-decoration:none;
-  color:#fff;
-  font-weight:800;
-  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  display:block;
+  transition: transform .15s ease, border-color .15s ease, background .15s ease;
 }
 
 .game-card:hover{
-  transform: translateY(-2px);
+  transform: scale(1.03);
   border-color: var(--green);
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,.07);
 }
 
-/* =========================
-   🔒 MODAL (Stake-like)
-========================= */
+/* ============ Modal Backdrop ============ */
 .modal{
   position: fixed;
   inset: 0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0,0,0,.62);
   backdrop-filter: blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 20px;
   z-index: 9999;
 
   /* animation */
@@ -182,18 +165,18 @@ body.no-scroll{ overflow:hidden; }
 }
 
 .modal.is-hidden{
-  opacity:0;
+  opacity: 0;
   pointer-events:none;
 }
 
+/* ============ Modal Card ============ */
 .modal-card{
-  width: 92%;
-  max-width: 620px;
-  background: linear-gradient(180deg, rgba(16,31,42,0.98), rgba(12,20,28,0.98));
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  width: min(720px, 96vw);
+  background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
   padding: 18px 18px 16px;
+  box-shadow: var(--shadow);
   position: relative;
 
   transform: translateY(0) scale(1);
@@ -201,93 +184,87 @@ body.no-scroll{ overflow:hidden; }
 }
 
 .modal.is-hidden .modal-card{
-  transform: translateY(6px) scale(0.98);
+  transform: translateY(10px) scale(.98);
 }
 
+/* Close */
 .modal-close{
   position:absolute;
   top: 12px;
   right: 12px;
-  border:none;
-  background: rgba(255,255,255,0.06);
-  color:#fff;
+  width: 34px;
+  height: 34px;
   border-radius: 10px;
-  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: white;
   cursor:pointer;
+  font-size: 16px;
 }
 
+.modal-close:hover{
+  background: rgba(255,255,255,.10);
+}
+
+/* top branding */
 .modal-top{
   display:flex;
-  justify-content:flex-start;
   align-items:center;
-  margin-bottom: 10px;
+  justify-content:flex-start;
+  padding: 6px 6px 12px;
 }
 
 .modal-brand{
   font-weight: 900;
-  font-size: 26px;
-  color: var(--green);
   letter-spacing: .2px;
+  color: var(--green);
+  font-size: 1.25rem;
 }
 
+/* headings */
 .modal-title{
-  margin: 10px 0 14px 0;
-  font-size: 22px;
-  font-weight: 900;
+  margin: 6px 6px 14px;
+  font-size: 1.6rem;
 }
 
-.progress-bar{
-  height: 3px;
-  background: rgba(255,255,255,0.10);
-  border-radius: 999px;
-  overflow:hidden;
-  margin-top: 6px;
-}
-.progress-fill{
-  height:100%;
-  width: 38%;
-  background: var(--green);
-}
-
+/* ============ Auth Layout ============ */
+.auth-view{ padding: 0 6px 8px; }
 .auth-view.is-hidden{ display:none; }
 
-/* form fields */
 .auth-form{
   display:flex;
-  flex-direction: column;
+  flex-direction:column;
   gap: 12px;
 }
 
-.field{
-  display:flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align:left;
-}
-
 .field span{
-  font-size: 13px;
-  color: rgba(255,255,255,0.75);
-  font-weight: 700;
+  display:block;
+  color: var(--muted);
+  font-size: .9rem;
+  margin-bottom: 6px;
 }
 
-input{
-  width:100%;
-  border-radius: 10px;
+.field input{
+  width: 100%;
   padding: 12px 12px;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(10,16,22,0.55);
-  color:#fff;
-  outline:none;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  color: white;
+  outline: none;
 }
 
-input:focus{
-  border-color: rgba(0,255,136,0.55);
-  box-shadow: 0 0 0 3px rgba(0,255,136,0.12);
+.field input:focus{
+  border-color: rgba(0,255,136,.55);
+  box-shadow: 0 0 0 3px rgba(0,255,136,.12);
 }
 
+/* password eye */
 .password-wrap{
-  position:relative;
+  display:flex;
+  align-items:center;
+  gap: 8px;
+  position: relative;
 }
 
 .password-wrap input{
@@ -296,86 +273,115 @@ input:focus{
 
 .eye-btn{
   position:absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  border:none;
+  border: none;
   background: transparent;
-  cursor:pointer;
+  cursor: pointer;
   padding: 6px;
-  border-radius: 8px;
-  opacity: 0.85;
+  border-radius: 10px;
 }
-
-.eye-btn:hover{ opacity: 1; background: rgba(255,255,255,0.06); }
 
 .eye-icon{
-  width: 18px;
-  height: 18px;
-  fill: rgba(255,255,255,0.85);
-  display:none;
+  width: 20px;
+  height: 20px;
+  fill: rgba(255,255,255,.75);
 }
 
-/* default shows "open" eye */
-.eye-btn .eye-open{ display:block; }
-/* when toggled on, show "off" eye */
+.eye-btn:hover .eye-icon{
+  fill: rgba(255,255,255,.95);
+}
+
+.eye-off{ display:none; }
 .eye-btn.is-on .eye-open{ display:none; }
 .eye-btn.is-on .eye-off{ display:block; }
 
+/* divider */
 .divider{
   display:flex;
   align-items:center;
   gap: 10px;
   margin: 14px 0;
-  color: rgba(255,255,255,0.55);
-  font-weight: 800;
+  color: var(--muted2);
+  font-weight: 700;
+  font-size: .85rem;
 }
+
 .divider::before,
 .divider::after{
   content:"";
-  flex:1;
-  height:1px;
-  background: rgba(255,255,255,0.10);
+  height: 1px;
+  flex: 1;
+  background: rgba(255,255,255,.10);
 }
-.divider span{ font-size: 12px; }
 
+.divider span{ padding: 0 4px; }
+
+/* footer link */
 .modal-foot{
-  margin-top: 14px;
-  color: rgba(255,255,255,0.75);
-  font-weight: 700;
-  text-align:center;
+  margin: 12px 4px 0;
+  color: var(--muted);
+  font-size: .95rem;
 }
 
 .link-btn{
-  border:none;
-  background:none;
-  color:#fff;
-  font-weight: 900;
-  cursor:pointer;
-  text-decoration: underline;
-  text-decoration-color: rgba(255,255,255,0.35);
-  text-underline-offset: 3px;
+  background: none;
+  border: none;
+  color: var(--green);
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
 }
 
+.link-btn:hover{ text-decoration: underline; }
+
+/* google icon */
+.btn-icon{
+  display:inline-flex;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.btn-icon svg{
+  width: 18px;
+  height: 18px;
+}
+
+/* phone area */
 .phone-area{
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,0.10);
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.16);
 }
-
 .phone-area.is-hidden{ display:none; }
 
 .recaptcha-box{
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
 }
 
-/* =========================
-   📱 MOBILE
-========================= */
+/* register progress bar (simple visual like stake step) */
+.progress-bar{
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.10);
+  margin: 2px 6px 14px;
+  overflow:hidden;
+}
+.progress-fill{
+  width: 45%;
+  height: 100%;
+  background: var(--green);
+}
+
+/* ============ Responsive ============ */
 @media (max-width: 520px){
   .navbar{ padding: 12px 14px; }
-  .nav-links{ display:none; }
-  .modal-card{ padding: 16px 14px; }
-  .modal-brand{ font-size: 22px; }
+  .nav-links{ display:none; } /* keeps it clean on mobile for now */
+  .modal-card{ width: 96vw; padding: 14px; }
+  .modal-title{ font-size: 1.35rem; }
 }
