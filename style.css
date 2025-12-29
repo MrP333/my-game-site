@@ -385,3 +385,42 @@ body{
   .modal-card{ width: 96vw; padding: 14px; }
   .modal-title{ font-size: 1.35rem; }
 }
+
+.user-menu { position: relative; display: inline-flex; align-items: center; }
+.user-button {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fff;
+  cursor: pointer;
+}
+.user-button:hover { border-color: rgba(0,255,136,0.6); }
+
+.chev { opacity: 0.8; }
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 180px;
+  border-radius: 12px;
+  background: rgba(20,20,20,0.95);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  padding: 8px;
+  z-index: 99999;
+}
+
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+.dropdown-item:hover { background: rgba(255,255,255,0.06); }

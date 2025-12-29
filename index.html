@@ -9,10 +9,10 @@
 </head>
 
 <body>
-
   <!-- 🔝 Navigation Bar -->
   <header class="navbar">
     <a href="index.html" class="logo">PaigonAi</a>
+
     <nav>
       <ul class="nav-links">
         <li><a href="#">Home</a></li>
@@ -20,10 +20,24 @@
         <li><a href="#">Leaderboard</a></li>
       </ul>
     </nav>
-    <div class="auth-buttons">
-      <button id="open-login">Login</button>
-      <button id="open-register">Register</button>
-    </div>
+
+    <div class="auth-buttons" id="auth-logged-out">
+  <button id="open-login" class="btn btn-ghost">Login</button>
+  <button id="open-register" class="btn btn-primary">Register</button>
+</div>
+
+<div class="user-menu is-hidden" id="auth-logged-in">
+  <button class="user-button" id="user-button" type="button">
+    <span id="nav-username">Account</span>
+    <span class="chev">▾</span>
+  </button>
+
+  <div class="dropdown is-hidden" id="user-dropdown">
+    <button class="dropdown-item" id="go-account" type="button">Account</button>
+    <button class="dropdown-item" id="logout" type="button">Logout</button>
+  </div>
+</div>
+
   </header>
 
   <!-- 🧠 Main Content -->
@@ -42,48 +56,182 @@
     </section>
   </main>
 
-<!-- 🔒 Auth Modal -->
-<div id="auth-modal" class="modal hidden">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">✕</button>
+  <!-- 🔒 AUTH MODAL (hidden by default) -->
+  <div id="auth-modal" class="modal is-hidden" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
+      <button class="modal-close" id="close-modal" aria-label="Close">✕</button>
 
-    <div id="auth-step-login" class="auth-step">
-      <h2>Login</h2>
-      <form id="login-form">
-        <input type="email" id="login-email" placeholder="Email" required>
-        <input type="password" id="login-password" placeholder="Password" required>
-        <button type="submit">Login</button>
-      </form>
-    </div>
+      <!-- branding -->
+      <div class="modal-top">
+        <div class="modal-brand">PaigonAi</div>
+      </div>
 
-    <div id="auth-step-register" class="auth-step hidden">
-      <h2>Create an Account</h2>
-      <form id="register-form">
-        <input type="email" id="register-email" placeholder="Email" required>
-        <input type="text" id="register-username" placeholder="Username" required>
-        <input type="password" id="register-password" placeholder="Password" required>
-        <input type="password" id="register-confirm" placeholder="Confirm Password" required>
-        <button type="submit">Register</button>
-      </form>
+      <!-- LOGIN VIEW -->
+      <section id="view-login" class="auth-view">
+        <h2 id="auth-title" class="modal-title">Sign In</h2>
+
+        <form id="login-form" class="auth-form">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" id="login-email" placeholder="you@example.com" required />
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <div class="password-wrap">
+              <input type="password" id="login-password" placeholder="••••••••" required />
+              <button type="button" class="eye-btn" data-eye="login-password" aria-label="Show password">
+                <!-- eye open -->
+                <svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5c5.5 0 9.7 4.2 11 7-1.3 2.8-5.5 7-11 7S2.3 14.8 1 12c1.3-2.8 5.5-7 11-7Zm0 2C7.8 7 4.3 10 3.2 12 4.3 14 7.8 17 12 17s7.7-3 8.8-5C19.7 10 16.2 7 12 7Zm0 2.5A2.5 2.5 0 1 1 12 14a2.5 2.5 0 0 1 0-5Z"/>
+                </svg>
+                <!-- eye off -->
+                <svg class="eye-icon eye-off" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 4.3 4.3 3 21 19.7 19.7 21l-2.2-2.2c-1.7.8-3.6 1.2-5.5 1.2-5.5 0-9.7-4.2-11-7 1-2.1 3.3-4.9 6.7-6.3L3 4.3Zm9 2.7c.9 0 1.8.2 2.6.5l-1.6 1.6A2.5 2.5 0 0 0 9.1 13l-1.6 1.6A4.5 4.5 0 0 1 12 7Zm8.8 5c-.6 1.3-2 3.2-4.1 4.3l-1.5-1.5a4.5 4.5 0 0 0-6-6L7.7 7.3C5.4 8.3 4 10.4 3.2 12 4.3 14 7.8 17 12 17c1.4 0 2.8-.3 4-.8l-1.6-1.6a2.5 2.5 0 0 1-3.3-3.3l-1.5-1.5 10.2 10.2c.6-.5 1.1-1 1.5-1.5.6-.7 1-1.4 1.3-2-.2-.4-.4-.8-.7-1.3Z"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-wide">Sign In</button>
+        </form>
+
+        <div class="divider"><span>OR</span></div>
+
+        <button id="google-login" class="btn btn-alt btn-wide">
+          <span class="btn-icon">
+            <!-- Google G -->
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#FFC107" d="M43.6 20.4H42V20H24v8h11.3A12 12 0 1 1 24 12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7A19.9 19.9 0 1 0 44 24c0-1.2-.1-2.4-.4-3.6Z"/>
+              <path fill="#FF3D00" d="M6.3 14.7 12.9 19.5A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4c-7.7 0-14.4 4.3-17.7 10.7Z"/>
+              <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.3l-6.1-5.2A11.9 11.9 0 0 1 24 36a12 12 0 0 1-11.1-7.5l-6.5 5A20 20 0 0 0 24 44Z"/>
+              <path fill="#1976D2" d="M43.6 20.4H42V20H24v8h11.3c-1 2.7-3 5-5.8 6.5l6.1 5.2C40.8 36.9 44 31 44 24c0-1.2-.1-2.4-.4-3.6Z"/>
+            </svg>
+          </span>
+          Sign in with Google
+        </button>
+
+        <button id="toggle-phone-login" class="btn btn-alt btn-wide" type="button">Sign in with phone</button>
+
+        <!-- PHONE LOGIN AREA -->
+        <div id="phone-area" class="phone-area is-hidden">
+          <label class="field">
+            <span>Phone Number</span>
+            <input type="tel" id="phone-number" placeholder="+1 555 555 5555" />
+          </label>
+
+          <div id="recaptcha-container" class="recaptcha-box"></div>
+
+          <button id="send-otp" class="btn btn-primary btn-wide" type="button">Send Code</button>
+
+          <label class="field">
+            <span>Verification Code</span>
+            <input type="text" id="otp-code" placeholder="123456" />
+          </label>
+
+          <button id="verify-otp" class="btn btn-primary btn-wide" type="button">Verify & Sign In</button>
+        </div>
+
+        <p class="modal-foot">
+          Don’t have an account?
+          <button class="link-btn" id="go-register" type="button">Register an Account</button>
+        </p>
+      </section>
+
+      <!-- REGISTER VIEW -->
+      <section id="view-register" class="auth-view is-hidden">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <h2 class="modal-title">Create an Account</h2>
+
+        <form id="register-form" class="auth-form">
+          <label class="field">
+            <span>Email</span>
+            <input type="email" id="register-email" placeholder="you@example.com" required />
+          </label>
+
+          <label class="field">
+            <span>Username</span>
+            <input type="text" id="register-username" placeholder="Your username" required />
+          </label>
+
+          <label class="field">
+            <span>Password</span>
+            <div class="password-wrap">
+              <input type="password" id="register-password" placeholder="Create a password" required />
+              <button type="button" class="eye-btn" data-eye="register-password" aria-label="Show password">
+                <svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5c5.5 0 9.7 4.2 11 7-1.3 2.8-5.5 7-11 7S2.3 14.8 1 12c1.3-2.8 5.5-7 11-7Zm0 2C7.8 7 4.3 10 3.2 12 4.3 14 7.8 17 12 17s7.7-3 8.8-5C19.7 10 16.2 7 12 7Zm0 2.5A2.5 2.5 0 1 1 12 14a2.5 2.5 0 0 1 0-5Z"/>
+                </svg>
+                <svg class="eye-icon eye-off" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 4.3 4.3 3 21 19.7 19.7 21l-2.2-2.2c-1.7.8-3.6 1.2-5.5 1.2-5.5 0-9.7-4.2-11-7 1-2.1 3.3-4.9 6.7-6.3L3 4.3Zm9 2.7c.9 0 1.8.2 2.6.5l-1.6 1.6A2.5 2.5 0 0 0 9.1 13l-1.6 1.6A4.5 4.5 0 0 1 12 7Zm8.8 5c-.6 1.3-2 3.2-4.1 4.3l-1.5-1.5a4.5 4.5 0 0 0-6-6L7.7 7.3C5.4 8.3 4 10.4 3.2 12 4.3 14 7.8 17 12 17c1.4 0 2.8-.3 4-.8l-1.6-1.6a2.5 2.5 0 0 1-3.3-3.3l-1.5-1.5 10.2 10.2c.6-.5 1.1-1 1.5-1.5.6-.7 1-1.4 1.3-2-.2-.4-.4-.8-.7-1.3Z"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Confirm Password</span>
+            <div class="password-wrap">
+              <input type="password" id="register-confirm" placeholder="Confirm password" required />
+              <button type="button" class="eye-btn" data-eye="register-confirm" aria-label="Show password">
+                <svg class="eye-icon eye-open" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 5c5.5 0 9.7 4.2 11 7-1.3 2.8-5.5 7-11 7S2.3 14.8 1 12c1.3-2.8 5.5-7 11-7Zm0 2C7.8 7 4.3 10 3.2 12 4.3 14 7.8 17 12 17s7.7-3 8.8-5C19.7 10 16.2 7 12 7Zm0 2.5A2.5 2.5 0 1 1 12 14a2.5 2.5 0 0 1 0-5Z"/>
+                </svg>
+                <svg class="eye-icon eye-off" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M3 4.3 4.3 3 21 19.7 19.7 21l-2.2-2.2c-1.7.8-3.6 1.2-5.5 1.2-5.5 0-9.7-4.2-11-7 1-2.1 3.3-4.9 6.7-6.3L3 4.3Zm9 2.7c.9 0 1.8.2 2.6.5l-1.6 1.6A2.5 2.5 0 0 0 9.1 13l-1.6 1.6A4.5 4.5 0 0 1 12 7Zm8.8 5c-.6 1.3-2 3.2-4.1 4.3l-1.5-1.5a4.5 4.5 0 0 0-6-6L7.7 7.3C5.4 8.3 4 10.4 3.2 12 4.3 14 7.8 17 12 17c1.4 0 2.8-.3 4-.8l-1.6-1.6a2.5 2.5 0 0 1-3.3-3.3l-1.5-1.5 10.2 10.2c.6-.5 1.1-1 1.5-1.5.6-.7 1-1.4 1.3-2-.2-.4-.4-.8-.7-1.3Z"/>
+                </svg>
+              </button>
+            </div>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-wide">Create Account</button>
+        </form>
+
+        <div class="divider"><span>OR</span></div>
+
+        <button id="google-register" class="btn btn-alt btn-wide" type="button">
+          <span class="btn-icon">
+            <svg viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#FFC107" d="M43.6 20.4H42V20H24v8h11.3A12 12 0 1 1 24 12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7A19.9 19.9 0 1 0 44 24c0-1.2-.1-2.4-.4-3.6Z"/>
+              <path fill="#FF3D00" d="M6.3 14.7 12.9 19.5A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4c-7.7 0-14.4 4.3-17.7 10.7Z"/>
+              <path fill="#4CAF50" d="M24 44c5.1 0 9.8-2 13.3-5.3l-6.1-5.2A11.9 11.9 0 0 1 24 36a12 12 0 0 1-11.1-7.5l-6.5 5A20 20 0 0 0 24 44Z"/>
+              <path fill="#1976D2" d="M43.6 20.4H42V20H24v8h11.3c-1 2.7-3 5-5.8 6.5l6.1 5.2C40.8 36.9 44 31 44 24c0-1.2-.1-2.4-.4-3.6Z"/>
+            </svg>
+          </span>
+          Continue with Google
+        </button>
+
+        <p class="modal-foot">
+          Already have an account?
+          <button class="link-btn" id="go-login" type="button">Sign In</button>
+        </p>
+      </section>
     </div>
   </div>
-</div>
 
-
-  <!-- 🔌 Firebase Auth -->
+  <!-- ✅ Firebase + Modal Logic -->
   <script type="module">
-   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-   import { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword 
-  }   from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"; 
-  import { 
-    getFirestore, 
-    doc, 
-    setDoc 
-  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+    // ---------------- Firebase Imports ----------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      GoogleAuthProvider,
+      signInWithPopup,
+      RecaptchaVerifier,
+      signInWithPhoneNumber
+    } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+    // ---------------- Firebase Config ----------------
     const firebaseConfig = {
       apiKey: "AIzaSyAIEYryVjB1gX2bzXWERNI0udfjHXuXwzc",
       authDomain: "paigonco.firebaseapp.com",
@@ -97,89 +245,276 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Register
-const registerForm = document.getElementById('register-form');
-registerForm?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('register-email').value;
-  const username = document.getElementById('register-username').value; // ✅ This was missing
-  const password = document.getElementById('register-password').value;
-  const confirm = document.getElementById('register-confirm').value;
+    // ---------------- Elements ----------------
+    const modal = document.getElementById("auth-modal");
+    const viewLogin = document.getElementById("view-login");
+    const viewRegister = document.getElementById("view-register");
 
-  if (password !== confirm) {
-    alert('Passwords do not match!');
-    return;
-  }
+    const openLoginBtn = document.getElementById("open-login");
+    const openRegisterBtn = document.getElementById("open-register");
+    const closeBtn = document.getElementById("close-modal");
 
-  try {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    const goRegister = document.getElementById("go-register");
+    const goLogin = document.getElementById("go-login");
 
-    // ✅ Save user info to Firestore
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
-      username: username,
-      createdAt: new Date()
+    const phoneArea = document.getElementById("phone-area");
+    const togglePhoneBtn = document.getElementById("toggle-phone-login");
+    const sendOtpBtn = document.getElementById("send-otp");
+    const verifyOtpBtn = document.getElementById("verify-otp");
+
+    // ---------------- Modal helpers ----------------
+    function showView(which) {
+      if (which === "register") {
+        viewRegister.classList.remove("is-hidden");
+        viewLogin.classList.add("is-hidden");
+      } else {
+        viewLogin.classList.remove("is-hidden");
+        viewRegister.classList.add("is-hidden");
+      }
+    }
+
+    function openModal(which = "login") {
+      modal.classList.remove("is-hidden");
+      modal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("no-scroll");
+      showView(which);
+    }
+
+    function closeModal() {
+      modal.classList.add("is-hidden");
+      modal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("no-scroll");
+      phoneArea?.classList.add("is-hidden");
+    }
+
+    // Failsafe: always start hidden
+    window.addEventListener("load", () => {
+      modal?.classList.add("is-hidden");
+      modal?.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("no-scroll");
     });
 
-    alert(`Welcome, ${username}! Account created.`);
-    registerForm.reset();
-    closeModal();
-  } catch (error) {
-    alert(error.message);
+    openLoginBtn?.addEventListener("click", () => openModal("login"));
+    openRegisterBtn?.addEventListener("click", () => openModal("register"));
+    closeBtn?.addEventListener("click", closeModal);
+
+    // click outside closes
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // escape closes
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.classList.contains("is-hidden")) closeModal();
+    });
+
+    goRegister?.addEventListener("click", () => showView("register"));
+    goLogin?.addEventListener("click", () => showView("login"));
+
+    // ---------------- Eye toggle ----------------
+    document.querySelectorAll(".eye-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.getAttribute("data-eye");
+        const input = document.getElementById(id);
+        if (!input) return;
+
+        const toText = input.type === "password";
+        input.type = toText ? "text" : "password";
+        btn.classList.toggle("is-on", toText);
+        btn.setAttribute("aria-label", toText ? "Hide password" : "Show password");
+      });
+    });
+
+    // ---------------- Firestore user doc ----------------
+    async function upsertUserDoc(user, extra = {}) {
+      const ref = doc(db, "users", user.uid);
+      const snap = await getDoc(ref);
+
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          uid: user.uid,
+          email: user.email || null,
+          createdAt: new Date(),
+          ...extra
+        });
+      } else {
+        await setDoc(ref, { ...extra }, { merge: true });
+      }
+    }
+
+    // ---------------- Email Register ----------------
+    const registerForm = document.getElementById("register-form");
+    registerForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("register-email").value.trim();
+      const username = document.getElementById("register-username").value.trim();
+      const password = document.getElementById("register-password").value;
+      const confirm = document.getElementById("register-confirm").value;
+
+      if (password !== confirm) return alert("Passwords do not match.");
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await upsertUserDoc(cred.user, { username });
+        registerForm.reset();
+        closeModal();
+        alert(`✅ Welcome, ${username}!`);
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    // ---------------- Email Login ----------------
+    const loginForm = document.getElementById("login-form");
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        await upsertUserDoc(cred.user);
+        loginForm.reset();
+        closeModal();
+        alert(`✅ Welcome back, ${email}!`);
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    // ---------------- Google Sign-In ----------------
+    const provider = new GoogleAuthProvider();
+
+    async function doGoogleSignIn() {
+      try {
+        const cred = await signInWithPopup(auth, provider);
+        const user = cred.user;
+        await upsertUserDoc(user, { username: user.displayName || "Player" });
+        closeModal();
+        alert("✅ Signed in with Google!");
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    document.getElementById("google-login")?.addEventListener("click", doGoogleSignIn);
+    document.getElementById("google-register")?.addEventListener("click", doGoogleSignIn);
+
+    // ---------------- Phone Sign-In (OTP) ----------------
+    let confirmationResult = null;
+
+    togglePhoneBtn?.addEventListener("click", () => {
+      phoneArea.classList.toggle("is-hidden");
+
+      // setup recaptcha once
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "normal"
+        });
+        window.recaptchaVerifier.render();
+      }
+    });
+
+    sendOtpBtn?.addEventListener("click", async () => {
+      const phone = document.getElementById("phone-number").value.trim();
+      if (!phone) return alert("Enter a phone number like +1 555 555 5555");
+
+      try {
+        confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+        alert("✅ Code sent! Check your phone.");
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    verifyOtpBtn?.addEventListener("click", async () => {
+      const code = document.getElementById("otp-code").value.trim();
+      if (!confirmationResult) return alert("Click 'Send Code' first.");
+      if (!code) return alert("Enter the verification code.");
+
+      try {
+        const cred = await confirmationResult.confirm(code);
+        await upsertUserDoc(cred.user, { phone: cred.user.phoneNumber });
+        closeModal();
+        alert("✅ Signed in with phone!");
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    // ---------- Navbar user menu ----------
+const loggedOutWrap = document.getElementById("auth-logged-out");
+const loggedInWrap = document.getElementById("auth-logged-in");
+const navUsername = document.getElementById("nav-username");
+
+const userBtn = document.getElementById("user-button");
+const dropdown = document.getElementById("user-dropdown");
+const logoutBtn = document.getElementById("logout");
+const goAccountBtn = document.getElementById("go-account");
+
+function setNavLoggedOut() {
+  loggedOutWrap?.classList.remove("is-hidden");
+  loggedInWrap?.classList.add("is-hidden");
+  dropdown?.classList.add("is-hidden");
+  if (navUsername) navUsername.textContent = "Account";
+}
+
+function setNavLoggedIn(usernameText = "Account") {
+  loggedOutWrap?.classList.add("is-hidden");
+  loggedInWrap?.classList.remove("is-hidden");
+  if (navUsername) navUsername.textContent = usernameText;
+}
+
+async function getUsernameForUser(user) {
+  try {
+    const ref = doc(db, "users", user.uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      const data = snap.data();
+      return data.username || user.displayName || user.email || "Account";
+    }
+  } catch (e) {}
+  return user.displayName || user.email || "Account";
+}
+
+// Toggle dropdown
+userBtn?.addEventListener("click", () => {
+  dropdown?.classList.toggle("is-hidden");
+});
+
+// Close dropdown when clicking outside
+document.addEventListener("click", (e) => {
+  if (!loggedInWrap) return;
+  if (!loggedInWrap.contains(e.target)) dropdown?.classList.add("is-hidden");
+});
+
+// Account button (for now just goes to a placeholder page)
+goAccountBtn?.addEventListener("click", () => {
+  window.location.href = "account.html";
+});
+
+// Logout
+logoutBtn?.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    dropdown?.classList.add("is-hidden");
+  } catch (err) {
+    alert(err.message);
   }
 });
 
-  alert(`Welcome, ${username}! Account created.`);
-  registerForm.reset();
-  closeModal();
-} catch (error) {
-  alert(error.message);
-}
-    });
+// Live auth state listener
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    setNavLoggedOut();
+    return;
+  }
+  const username = await getUsernameForUser(user);
+  setNavLoggedIn(username);
+});
 
-    // Login
-    const loginForm = document.getElementById('login-form');
-    loginForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
-
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-        alert(`Welcome back, ${email}!`);
-        loginForm.reset();
-      } catch (error) {
-        alert(error.message);
-      }
-    });
   </script>
-
-  <!-- 💡 Modal Logic -->
-  <script>
-    const modal = document.getElementById('auth-modal');
-    const loginStep = document.getElementById('auth-step-login');
-    const registerStep = document.getElementById('auth-step-register');
-
-    document.getElementById('open-login')?.addEventListener('click', () => {
-      modal.classList.remove('hidden');
-      loginStep.classList.remove('hidden');
-      registerStep.classList.add('hidden');
-    });
-
-    document.getElementById('open-register')?.addEventListener('click', () => {
-      modal.classList.remove('hidden');
-      loginStep.classList.add('hidden');
-      registerStep.classList.remove('hidden');
-    });
-
-    function closeModal() {
-      modal.classList.add('hidden');
-      loginStep.classList.remove('hidden');
-      registerStep.classList.add('hidden');
-    }
-  </script>
-
 </body>
 </html>
