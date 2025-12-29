@@ -413,6 +413,8 @@ body{
   z-index: 99999;
 }
 
+.is-hidden { display: none !important; }
+
 .dropdown-item {
   width: 100%;
   text-align: left;

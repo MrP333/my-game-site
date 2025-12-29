@@ -468,16 +468,33 @@ function setNavLoggedIn(usernameText = "Account") {
 }
 
 async function getUsernameForUser(user) {
+  // 1) Firestore username (email/password users)
   try {
     const ref = doc(db, "users", user.uid);
     const snap = await getDoc(ref);
     if (snap.exists()) {
       const data = snap.data();
-      return data.username || user.displayName || user.email || "Account";
+      if (data.username && String(data.username).trim().length > 0) {
+        return data.username.trim();
+      }
     }
-  } catch (e) {}
-  return user.displayName || user.email || "Account";
+  } catch (e) {
+    // ignore, fall through
+  }
+
+  // 2) Google display name (Google users)
+  if (user.displayName && user.displayName.trim().length > 0) {
+    return user.displayName.trim();
+  }
+
+  // 3) fallback: email prefix (before @)
+  if (user.email) {
+    return user.email.split("@")[0];
+  }
+
+  return "Account";
 }
+
 
 // Toggle dropdown
 userBtn?.addEventListener("click", () => {
