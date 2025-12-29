@@ -42,32 +42,33 @@
     </section>
   </main>
 
-  <!-- 🔒 Auth Modal -->
-  <div id="auth-modal" class="modal hidden">
-    <div class="modal-content">
-      <button class="modal-close" onclick="closeModal()">✕</button>
+<!-- 🔒 Auth Modal -->
+<div id="auth-modal" class="modal hidden">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
 
-      <div id="auth-step-login" class="auth-step">
-        <h2>Login</h2>
-        <form id="login-form">
-          <input type="email" id="login-email" placeholder="Email" required>
-          <input type="password" id="login-password" placeholder="Password" required>
-          <button type="submit">Login</button>
-        </form>
-      </div>
+    <div id="auth-step-login" class="auth-step">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required>
+        <input type="password" id="login-password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    </div>
 
-      <div id="auth-step-register" class="auth-step hidden">
-        <h2>Create an Account</h2>
-        <form id="register-form">
-          <input type="email" id="register-email" placeholder="Email" required>
-          <input type="text" id="register-username" placeholder="Username" required>
-          <input type="password" id="register-password" placeholder="Password" required>
-          <input type="password" id="register-confirm" placeholder="Confirm Password" required>
-          <button type="submit">Register</button>
-        </form>
-      </div>
+    <div id="auth-step-register" class="auth-step hidden">
+      <h2>Create an Account</h2>
+      <form id="register-form">
+        <input type="email" id="register-email" placeholder="Email" required>
+        <input type="text" id="register-username" placeholder="Username" required>
+        <input type="password" id="register-password" placeholder="Password" required>
+        <input type="password" id="register-confirm" placeholder="Confirm Password" required>
+        <button type="submit">Register</button>
+      </form>
     </div>
   </div>
+</div>
+
 
   <!-- 🔌 Firebase Auth -->
   <script type="module">
