@@ -72,8 +72,17 @@
 
   <!-- 🔌 Firebase Auth -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+   import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword 
+  }   from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"; 
+  import { 
+    getFirestore, 
+    doc, 
+    setDoc 
+  } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAIEYryVjB1gX2bzXWERNI0udfjHXuXwzc",
@@ -86,6 +95,8 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+
 
     // Register
     const registerForm = document.getElementById('register-form');
@@ -101,12 +112,23 @@
       }
 
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        alert(`Welcome, ${email}! Account created.`);
-        registerForm.reset();
-      } catch (error) {
-        alert(error.message);
-      }
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  const user = userCredential.user;
+
+  // Save user info to Firestore
+  await setDoc(doc(db, "users", user.uid), {
+    uid: user.uid,
+    email: user.email,
+    username: username,
+    createdAt: new Date()
+  });
+
+  alert(`Welcome, ${username}! Account created.`);
+  registerForm.reset();
+  closeModal();
+} catch (error) {
+  alert(error.message);
+}
     });
 
     // Login
