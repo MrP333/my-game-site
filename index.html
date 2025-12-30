@@ -21,23 +21,25 @@
       </ul>
     </nav>
 
+    <!-- Logged OUT -->
     <div class="auth-buttons" id="auth-logged-out">
-  <button id="open-login" class="btn btn-ghost">Login</button>
-  <button id="open-register" class="btn btn-primary">Register</button>
-</div>
+      <button id="open-login" class="btn btn-ghost">Login</button>
+      <button id="open-register" class="btn btn-primary">Register</button>
+    </div>
 
-<div class="user-menu is-hidden" id="auth-logged-in">
-  <button class="user-button" id="user-button" type="button">
-    <span id="nav-username">Account</span>
-    <span class="chev">▾</span>
-  </button>
+    <!-- Logged IN -->
+    <div class="user-menu is-hidden" id="auth-logged-in">
+      <button class="user-button" id="user-button" type="button" aria-haspopup="true" aria-expanded="false">
+        <span id="nav-username">Account</span>
+        <span class="chev">▾</span>
+      </button>
 
-  <div class="dropdown is-hidden" id="user-dropdown">
-    <button class="dropdown-item" id="go-account" type="button">Account</button>
-    <button class="dropdown-item" id="logout" type="button">Logout</button>
-  </div>
-</div>
-
+      <div class="dropdown is-hidden" id="user-dropdown" role="menu" aria-label="User menu">
+        <button class="dropdown-item" id="go-account" type="button" role="menuitem">Account</button>
+        <button class="dropdown-item" id="open-wallet" type="button" role="menuitem">Wallet</button>
+        <button class="dropdown-item" id="logout" type="button" role="menuitem">Logout</button>
+      </div>
+    </div>
   </header>
 
   <!-- 🧠 Main Content -->
@@ -56,7 +58,7 @@
     </section>
   </main>
 
-  <!-- 🔒 AUTH MODAL (hidden by default) -->
+  <!-- 🔒 AUTH MODAL -->
   <div id="auth-modal" class="modal is-hidden" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
       <button class="modal-close" id="close-modal" aria-label="Close">✕</button>
@@ -98,9 +100,8 @@
 
         <div class="divider"><span>OR</span></div>
 
-        <button id="google-login" class="btn btn-alt btn-wide">
+        <button id="google-login" class="btn btn-alt btn-wide" type="button">
           <span class="btn-icon">
-            <!-- Google G -->
             <svg viewBox="0 0 48 48" aria-hidden="true">
               <path fill="#FFC107" d="M43.6 20.4H42V20H24v8h11.3A12 12 0 1 1 24 12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7A19.9 19.9 0 1 0 44 24c0-1.2-.1-2.4-.4-3.6Z"/>
               <path fill="#FF3D00" d="M6.3 14.7 12.9 19.5A12 12 0 0 1 24 12c3.1 0 5.9 1.2 8.1 3.1l5.7-5.7A19.9 19.9 0 0 0 24 4c-7.7 0-14.4 4.3-17.7 10.7Z"/>
@@ -111,7 +112,9 @@
           Sign in with Google
         </button>
 
-        <button id="toggle-phone-login" class="btn btn-alt btn-wide" type="button">Sign in with phone</button>
+        <button id="toggle-phone-login" class="btn btn-alt btn-wide" type="button">
+          Sign in with phone
+        </button>
 
         <!-- PHONE LOGIN AREA -->
         <div id="phone-area" class="phone-area is-hidden">
@@ -209,43 +212,47 @@
     </div>
   </div>
 
+  <!-- ✅ Toasts -->
+  <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+
   <!-- ✅ Firebase + Modal Logic -->
   <script type="module">
-    // ✅ Toast helper
-function showToast(type, title, msg, ms = 2200) {
-  const root = document.getElementById("toast-root");
-  if (!root) return;
+    // ---------- Toast helper ----------
+    function showToast(type, title, msg, ms = 2200) {
+      const root = document.getElementById("toast-root");
+      if (!root) return;
 
-  const el = document.createElement("div");
-  el.className = `toast ${type}`;
-  el.innerHTML = `
-    <div class="title">${title}</div>
-    <div class="msg">${msg}</div>
-  `;
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.innerHTML = `
+        <div class="title">${title}</div>
+        <div class="msg">${msg}</div>
+      `;
 
-  root.appendChild(el);
-  requestAnimationFrame(() => el.classList.add("show"));
+      root.appendChild(el);
+      requestAnimationFrame(() => el.classList.add("show"));
 
-  setTimeout(() => {
-    el.classList.remove("show");
-    setTimeout(() => el.remove(), 250);
-  }, ms);
-}
+      setTimeout(() => {
+        el.classList.remove("show");
+        setTimeout(() => el.remove(), 250);
+      }, ms);
+    }
 
-// ✅ Button loading helper
-function setLoading(btn, isLoading, loadingText) {
-  if (!btn) return;
-  if (isLoading) {
-    btn.dataset.prevText = btn.textContent;
-    if (loadingText) btn.textContent = loadingText;
-    btn.classList.add("is-loading");
-    btn.disabled = true;
-  } else {
-    btn.classList.remove("is-loading");
-    btn.disabled = false;
-    if (btn.dataset.prevText) btn.textContent = btn.dataset.prevText;
-  }
-}
+    // ---------- Button loading helper ----------
+    function setLoading(btn, isLoading, loadingText) {
+      if (!btn) return;
+      if (isLoading) {
+        btn.dataset.prevText = btn.textContent;
+        if (loadingText) btn.textContent = loadingText;
+        btn.classList.add("is-loading");
+        btn.disabled = true;
+      } else {
+        btn.classList.remove("is-loading");
+        btn.disabled = false;
+        if (btn.dataset.prevText) btn.textContent = btn.dataset.prevText;
+      }
+    }
+
     // ---------------- Firebase Imports ----------------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import {
@@ -259,6 +266,7 @@ function setLoading(btn, isLoading, loadingText) {
       RecaptchaVerifier,
       signInWithPhoneNumber
     } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
     import {
       getFirestore,
       doc,
@@ -297,6 +305,23 @@ function setLoading(btn, isLoading, loadingText) {
     const sendOtpBtn = document.getElementById("send-otp");
     const verifyOtpBtn = document.getElementById("verify-otp");
 
+    // Navbar user menu
+    const loggedOutWrap = document.getElementById("auth-logged-out");
+    const loggedInWrap = document.getElementById("auth-logged-in");
+    const navUsername = document.getElementById("nav-username");
+
+    const userBtn = document.getElementById("user-button");
+    const dropdown = document.getElementById("user-dropdown");
+    const logoutBtn = document.getElementById("logout");
+    const goAccountBtn = document.getElementById("go-account");
+    const walletBtn = document.getElementById("open-wallet");
+
+    // ✅ THIS FIXES YOUR GOOGLE ERROR:
+    function forceCloseUserUI() {
+      dropdown?.classList.add("is-hidden");
+      userBtn?.setAttribute("aria-expanded", "false");
+    }
+
     // ---------------- Modal helpers ----------------
     function showView(which) {
       if (which === "register") {
@@ -327,6 +352,7 @@ function setLoading(btn, isLoading, loadingText) {
       modal?.classList.add("is-hidden");
       modal?.setAttribute("aria-hidden", "true");
       document.body.classList.remove("no-scroll");
+      forceCloseUserUI();
     });
 
     openLoginBtn?.addEventListener("click", () => openModal("login"));
@@ -377,294 +403,258 @@ function setLoading(btn, isLoading, loadingText) {
       }
     }
 
-    // ---------------- Email Register ----------------
-const registerForm = document.getElementById("register-form");
+    // ---------------- Username resolver ----------------
+    async function getUsernameForUser(user) {
+      // 1) Firestore username
+      try {
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.username && String(data.username).trim().length > 0) {
+            return data.username.trim();
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
 
-registerForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
+      // 2) Provider display name (Google)
+      if (user.displayName && user.displayName.trim().length > 0) {
+        return user.displayName.trim();
+      }
 
-  const submitBtn = registerForm.querySelector('button[type="submit"]');
-  setLoading(submitBtn, true, "Creating...");
+      // 3) fallback: email prefix
+      if (user.email) return user.email.split("@")[0];
 
-  const email = document.getElementById("register-email").value.trim();
-  const username = document.getElementById("register-username").value.trim();
-  const password = document.getElementById("register-password").value;
-  const confirm = document.getElementById("register-confirm").value;
-
-  if (password !== confirm) {
-    showToast("error", "Check passwords", "Passwords do not match.");
-    setLoading(submitBtn, false);
-    return;
-  }
-
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await upsertUserDoc(cred.user, { username });
-
-    forceCloseUserUI();      // closes dropdown if it ever flashed
-    registerForm.reset();
-    closeModal();
-
-    showToast("success", "Account created", `Welcome, ${username}!`);
-  } catch (err) {
-    showToast("error", "Sign up failed", err.message);
-  } finally {
-    setLoading(submitBtn, false);
-  }
-});
-
-// ---------------- Email Login ----------------
-const loginForm = document.getElementById("login-form");
-
-loginForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const submitBtn = loginForm.querySelector('button[type="submit"]');
-  setLoading(submitBtn, true, "Signing in...");
-
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value;
-
-  try {
-    const cred = await signInWithEmailAndPassword(auth, email, password);
-    await upsertUserDoc(cred.user);
-
-    forceCloseUserUI();
-    loginForm.reset();
-    closeModal();
-
-    showToast("success", "Signed in", "Welcome back!");
-  } catch (err) {
-    showToast("error", "Sign in failed", err.message);
-  } finally {
-    setLoading(submitBtn, false);
-  }
-});
-
-// ---------------- Google Sign-In ----------------
-const provider = new GoogleAuthProvider();
-
-async function doGoogleSignIn() {
-  const g1 = document.getElementById("google-login");
-  const g2 = document.getElementById("google-register");
-
-  setLoading(g1, true, "Opening Google...");
-  setLoading(g2, true, "Opening Google...");
-
-  try {
-    const cred = await signInWithPopup(auth, provider);
-    const user = cred.user;
-
-    await upsertUserDoc(user, { username: user.displayName || "Player" });
-
-    forceCloseUserUI();
-    closeModal();
-
-    showToast("success", "Signed in", "Signed in with Google.");
-  } catch (err) {
-    showToast("error", "Google sign-in failed", err.message);
-  } finally {
-    setLoading(g1, false);
-    setLoading(g2, false);
-  }
-}
-
-document.getElementById("google-login")?.addEventListener("click", doGoogleSignIn);
-document.getElementById("google-register")?.addEventListener("click", doGoogleSignIn);
-
-// ---------------- Phone Sign-In (OTP) ----------------
-let confirmationResult = null;
-
-togglePhoneBtn?.addEventListener("click", () => {
-  phoneArea.classList.toggle("is-hidden");
-
-  // setup recaptcha once
-  if (!window.recaptchaVerifier) {
-    window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-      size: "normal"
-    });
-
-    window.recaptchaVerifier.render().then(() => {
-      showToast("success", "Ready", "reCAPTCHA loaded. You can send a code.");
-    }).catch((err) => {
-      showToast("error", "reCAPTCHA failed", err.message);
-    });
-  }
-});
-
-sendOtpBtn?.addEventListener("click", async () => {
-  const phone = document.getElementById("phone-number").value.trim();
-  if (!phone) {
-    showToast("error", "Missing phone", "Enter a phone number like +1 555 555 5555");
-    return;
-  }
-
-  setLoading(sendOtpBtn, true, "Sending...");
-
-  try {
-    if (!window.recaptchaVerifier) {
-      showToast("error", "reCAPTCHA", "Open 'Sign in with phone' first to load reCAPTCHA.");
-      return;
+      return "Account";
     }
 
-    confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-    showToast("success", "Code sent", "Check your phone for the verification code.");
-  } catch (err) {
-    showToast("error", "Send code failed", err.message);
-  } finally {
-    setLoading(sendOtpBtn, false);
-  }
-});
+    // ---------------- Navbar state ----------------
+    function setNavLoggedOut() {
+      loggedOutWrap?.classList.remove("is-hidden");
+      loggedInWrap?.classList.add("is-hidden");
+      forceCloseUserUI();
+      if (navUsername) navUsername.textContent = "Account";
+    }
 
-verifyOtpBtn?.addEventListener("click", async () => {
-  const code = document.getElementById("otp-code").value.trim();
+    function setNavLoggedIn(usernameText = "Account") {
+      loggedOutWrap?.classList.add("is-hidden");
+      loggedInWrap?.classList.remove("is-hidden");
+      if (navUsername) navUsername.textContent = usernameText;
+      forceCloseUserUI();
+    }
 
-  if (!confirmationResult) {
-    showToast("error", "Step required", "Click “Send Code” first.");
-    return;
-  }
+    // Dropdown toggle
+    userBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown?.classList.toggle("is-hidden");
+      const expanded = dropdown && !dropdown.classList.contains("is-hidden");
+      userBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
 
-  if (!code) {
-    showToast("error", "Missing code", "Enter the verification code you received.");
-    return;
-  }
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!loggedInWrap) return;
+      if (!loggedInWrap.contains(e.target)) forceCloseUserUI();
+    });
 
-  setLoading(verifyOtpBtn, true, "Verifying...");
+    // Account
+    goAccountBtn?.addEventListener("click", () => {
+      window.location.href = "account.html";
+    });
 
-  try {
-    const cred = await confirmationResult.confirm(code);
-    await upsertUserDoc(cred.user, { phone: cred.user.phoneNumber });
+    // Wallet placeholder
+    walletBtn?.addEventListener("click", () => {
+      forceCloseUserUI();
+      showToast("success", "Wallet", "Coming soon.");
+    });
 
-    forceCloseUserUI();
-    closeModal();
+    // Logout
+    logoutBtn?.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        forceCloseUserUI();
+        showToast("success", "Signed out", "You’ve been logged out.");
+      } catch (err) {
+        showToast("error", "Logout failed", err.message);
+      }
+    });
 
-    showToast("success", "Signed in", "Signed in with phone.");
-  } catch (err) {
-    showToast("error", "Verify failed", err.message);
-  } finally {
-    setLoading(verifyOtpBtn, false);
-  }
-});
+    // Live auth state listener
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setNavLoggedOut();
+        return;
+      }
+      const username = await getUsernameForUser(user);
+      setNavLoggedIn(username);
+    });
 
+    // ---------------- Email Register ----------------
+    const registerForm = document.getElementById("register-form");
+    registerForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const submitBtn = registerForm.querySelector('button[type="submit"]');
+      setLoading(submitBtn, true, "Creating...");
+
+      const email = document.getElementById("register-email").value.trim();
+      const username = document.getElementById("register-username").value.trim();
+      const password = document.getElementById("register-password").value;
+      const confirm = document.getElementById("register-confirm").value;
+
+      if (password !== confirm) {
+        showToast("error", "Check passwords", "Passwords do not match.");
+        setLoading(submitBtn, false);
+        return;
+      }
+
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        await upsertUserDoc(cred.user, { username });
+
+        forceCloseUserUI();
+        registerForm.reset();
+        closeModal();
+
+        showToast("success", "Account created", `Welcome, ${username}!`);
+      } catch (err) {
+        showToast("error", "Sign up failed", err.message);
+      } finally {
+        setLoading(submitBtn, false);
+      }
+    });
+
+    // ---------------- Email Login ----------------
+    const loginForm = document.getElementById("login-form");
+    loginForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const submitBtn = loginForm.querySelector('button[type="submit"]');
+      setLoading(submitBtn, true, "Signing in...");
+
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value;
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        await upsertUserDoc(cred.user);
+
+        forceCloseUserUI();
+        loginForm.reset();
+        closeModal();
+
+        showToast("success", "Signed in", "Welcome back!");
+      } catch (err) {
+        showToast("error", "Sign in failed", err.message);
+      } finally {
+        setLoading(submitBtn, false);
+      }
+    });
+
+    // ---------------- Google Sign-In ----------------
+    const provider = new GoogleAuthProvider();
+
+    async function doGoogleSignIn() {
+      const g1 = document.getElementById("google-login");
+      const g2 = document.getElementById("google-register");
+
+      setLoading(g1, true, "Opening Google...");
+      setLoading(g2, true, "Opening Google...");
+
+      try {
+        const cred = await signInWithPopup(auth, provider);
+        const user = cred.user;
+
+        await upsertUserDoc(user, { username: user.displayName || "Player" });
+
+        forceCloseUserUI();
+        closeModal();
+
+        showToast("success", "Signed in", "Signed in with Google.");
+      } catch (err) {
+        showToast("error", "Google sign-in failed", err.message);
+      } finally {
+        setLoading(g1, false);
+        setLoading(g2, false);
+      }
+    }
+
+    document.getElementById("google-login")?.addEventListener("click", doGoogleSignIn);
+    document.getElementById("google-register")?.addEventListener("click", doGoogleSignIn);
+
+    // ---------------- Phone Sign-In (OTP) ----------------
+    let confirmationResult = null;
+
+    togglePhoneBtn?.addEventListener("click", () => {
+      phoneArea.classList.toggle("is-hidden");
+
+      // setup recaptcha once
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+          size: "normal"
+        });
+
+        window.recaptchaVerifier.render().catch((err) => {
+          showToast("error", "reCAPTCHA failed", err.message);
+        });
+      }
+    });
 
     sendOtpBtn?.addEventListener("click", async () => {
       const phone = document.getElementById("phone-number").value.trim();
-      if (!phone) return alert("Enter a phone number like +1 555 555 5555");
+      if (!phone) {
+        showToast("error", "Missing phone", "Enter a phone number like +1 555 555 5555");
+        return;
+      }
+
+      setLoading(sendOtpBtn, true, "Sending...");
 
       try {
+        if (!window.recaptchaVerifier) {
+          showToast("error", "reCAPTCHA", "Click “Sign in with phone” first.");
+          return;
+        }
+
         confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-        alert("✅ Code sent! Check your phone.");
+        showToast("success", "Code sent", "Check your phone for the verification code.");
       } catch (err) {
-        alert(err.message);
+        showToast("error", "Send code failed", err.message);
+      } finally {
+        setLoading(sendOtpBtn, false);
       }
     });
 
     verifyOtpBtn?.addEventListener("click", async () => {
       const code = document.getElementById("otp-code").value.trim();
-      if (!confirmationResult) return alert("Click 'Send Code' first.");
-      if (!code) return alert("Enter the verification code.");
+
+      if (!confirmationResult) {
+        showToast("error", "Step required", "Click “Send Code” first.");
+        return;
+      }
+
+      if (!code) {
+        showToast("error", "Missing code", "Enter the verification code you received.");
+        return;
+      }
+
+      setLoading(verifyOtpBtn, true, "Verifying...");
 
       try {
         const cred = await confirmationResult.confirm(code);
         await upsertUserDoc(cred.user, { phone: cred.user.phoneNumber });
+
+        forceCloseUserUI();
         closeModal();
-        alert("✅ Signed in with phone!");
+
+        showToast("success", "Signed in", "Signed in with phone.");
       } catch (err) {
-        alert(err.message);
+        showToast("error", "Verify failed", err.message);
+      } finally {
+        setLoading(verifyOtpBtn, false);
       }
     });
-
-    // ---------- Navbar user menu ----------
-const loggedOutWrap = document.getElementById("auth-logged-out");
-const loggedInWrap = document.getElementById("auth-logged-in");
-const navUsername = document.getElementById("nav-username");
-
-const userBtn = document.getElementById("user-button");
-const dropdown = document.getElementById("user-dropdown");
-const logoutBtn = document.getElementById("logout");
-const goAccountBtn = document.getElementById("go-account");
-
-function setNavLoggedOut() {
-  loggedOutWrap?.classList.remove("is-hidden");
-  loggedInWrap?.classList.add("is-hidden");
-  dropdown?.classList.add("is-hidden");
-  if (navUsername) navUsername.textContent = "Account";
-}
-
-function setNavLoggedIn(usernameText = "Account") {
-  loggedOutWrap?.classList.add("is-hidden");
-  loggedInWrap?.classList.remove("is-hidden");
-  if (navUsername) navUsername.textContent = usernameText;
-}
-
-async function getUsernameForUser(user) {
-  // 1) Firestore username (email/password users)
-  try {
-    const ref = doc(db, "users", user.uid);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      const data = snap.data();
-      if (data.username && String(data.username).trim().length > 0) {
-        return data.username.trim();
-      }
-    }
-  } catch (e) {
-    // ignore, fall through
-  }
-
-  // 2) Google display name (Google users)
-  if (user.displayName && user.displayName.trim().length > 0) {
-    return user.displayName.trim();
-  }
-
-  // 3) fallback: email prefix (before @)
-  if (user.email) {
-    return user.email.split("@")[0];
-  }
-
-  return "Account";
-}
-
-
-// Toggle dropdown
-userBtn?.addEventListener("click", () => {
-  dropdown?.classList.toggle("is-hidden");
-});
-
-// Close dropdown when clicking outside
-document.addEventListener("click", (e) => {
-  if (!loggedInWrap) return;
-  if (!loggedInWrap.contains(e.target)) dropdown?.classList.add("is-hidden");
-});
-
-// Account button (for now just goes to a placeholder page)
-goAccountBtn?.addEventListener("click", () => {
-  window.location.href = "account.html";
-});
-
-// Logout
-logoutBtn?.addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-    dropdown?.classList.add("is-hidden");
-  } catch (err) {
-    alert(err.message);
-  }
-});
-
-// Live auth state listener
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    setNavLoggedOut();
-    return;
-  }
-  const username = await getUsernameForUser(user);
-  setNavLoggedIn(username);
-});
-
   </script>
-  
-  <!-- ✅ Toasts -->
-<div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
 </body>
 </html>
