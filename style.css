@@ -165,12 +165,11 @@ body{
   color: #dfffee;
 }
 
-.user-name{
-  font-weight: 900;
-}
+.user-name{ font-weight: 900; }
 
 .chev { opacity: 0.8; }
 
+/* ✅ Dropdown */
 .dropdown{
   position: absolute;
   right: 0;
@@ -182,6 +181,14 @@ body{
   box-shadow: 0 12px 40px rgba(0,0,0,0.6);
   padding: 8px;
   z-index: 99999;
+}
+
+/* ✅ HOVER OPEN (the main change) */
+.user-menu:hover .dropdown{
+  display: block !important;
+}
+.user-menu:hover .user-button{
+  border-color: rgba(0,255,136,0.6);
 }
 
 .dropdown-item{
@@ -542,5 +549,5 @@ body{
 @media (max-width: 680px){
   .navbar{ padding: 12px 14px; }
   .nav-links{ display:none; }
-  .balance-chip{ display:none; } /* clean mobile look for now */
+  .balance-chip{ display:none; }
 }
