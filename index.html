@@ -21,23 +21,30 @@
       </ul>
     </nav>
 
-    <!-- Logged OUT -->
+    <!-- ✅ Right side (Logged out) -->
     <div class="auth-buttons" id="auth-logged-out">
       <button id="open-login" class="btn btn-ghost">Login</button>
       <button id="open-register" class="btn btn-primary">Register</button>
     </div>
 
-    <!-- Logged IN -->
-    <div class="user-menu is-hidden" id="auth-logged-in">
-      <button class="user-button" id="user-button" type="button" aria-haspopup="true" aria-expanded="false">
-        <span id="nav-username">Account</span>
-        <span class="chev">▾</span>
-      </button>
+    <!-- ✅ Right side (Logged in) -->
+    <div class="nav-user is-hidden" id="auth-logged-in">
+      <div class="balance-chip" id="balance-chip" title="Wallet (coming soon)">
+        <span class="bal-label">Balance</span>
+        <span class="bal-amt" id="nav-balance">$0.00</span>
+      </div>
 
-      <div class="dropdown is-hidden" id="user-dropdown" role="menu" aria-label="User menu">
-        <button class="dropdown-item" id="go-account" type="button" role="menuitem">Account</button>
-        <button class="dropdown-item" id="open-wallet" type="button" role="menuitem">Wallet</button>
-        <button class="dropdown-item" id="logout" type="button" role="menuitem">Logout</button>
+      <div class="user-menu">
+        <button class="user-button" id="user-button" type="button" aria-haspopup="true" aria-expanded="false">
+          <span class="avatar" id="nav-avatar">P</span>
+          <span class="user-name" id="nav-username">Account</span>
+          <span class="chev">▾</span>
+        </button>
+
+        <div class="dropdown is-hidden" id="user-dropdown" role="menu" aria-label="User menu">
+          <button class="dropdown-item" id="go-account" type="button" role="menuitem">Account</button>
+          <button class="dropdown-item" id="logout" type="button" role="menuitem">Logout</button>
+        </div>
       </div>
     </div>
   </header>
@@ -58,7 +65,7 @@
     </section>
   </main>
 
-  <!-- 🔒 AUTH MODAL -->
+  <!-- 🔒 AUTH MODAL (hidden by default) -->
   <div id="auth-modal" class="modal is-hidden" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">
       <button class="modal-close" id="close-modal" aria-label="Close">✕</button>
@@ -112,9 +119,7 @@
           Sign in with Google
         </button>
 
-        <button id="toggle-phone-login" class="btn btn-alt btn-wide" type="button">
-          Sign in with phone
-        </button>
+        <button id="toggle-phone-login" class="btn btn-alt btn-wide" type="button">Sign in with phone</button>
 
         <!-- PHONE LOGIN AREA -->
         <div id="phone-area" class="phone-area is-hidden">
@@ -224,11 +229,7 @@
 
       const el = document.createElement("div");
       el.className = `toast ${type}`;
-      el.innerHTML = `
-        <div class="title">${title}</div>
-        <div class="msg">${msg}</div>
-      `;
-
+      el.innerHTML = `<div class="title">${title}</div><div class="msg">${msg}</div>`;
       root.appendChild(el);
       requestAnimationFrame(() => el.classList.add("show"));
 
@@ -251,6 +252,16 @@
         btn.disabled = false;
         if (btn.dataset.prevText) btn.textContent = btn.dataset.prevText;
       }
+    }
+
+    function formatUSDFromCents(cents) {
+      const n = Number(cents || 0) / 100;
+      return n.toLocaleString(undefined, { style: "currency", currency: "USD" });
+    }
+
+    function avatarLetter(nameOrEmail) {
+      const ch = (nameOrEmail || "P").trim()[0]?.toUpperCase() || "P";
+      return ch;
     }
 
     // ---------------- Firebase Imports ----------------
@@ -305,18 +316,21 @@
     const sendOtpBtn = document.getElementById("send-otp");
     const verifyOtpBtn = document.getElementById("verify-otp");
 
-    // Navbar user menu
+    // Navbar auth areas
     const loggedOutWrap = document.getElementById("auth-logged-out");
     const loggedInWrap = document.getElementById("auth-logged-in");
+
     const navUsername = document.getElementById("nav-username");
+    const navAvatar = document.getElementById("nav-avatar");
+    const navBalance = document.getElementById("nav-balance");
+    const balanceChip = document.getElementById("balance-chip");
 
     const userBtn = document.getElementById("user-button");
     const dropdown = document.getElementById("user-dropdown");
     const logoutBtn = document.getElementById("logout");
     const goAccountBtn = document.getElementById("go-account");
-    const walletBtn = document.getElementById("open-wallet");
 
-    // ✅ THIS FIXES YOUR GOOGLE ERROR:
+    // ✅ Prevent your “forceCloseUserUI is not defined” error
     function forceCloseUserUI() {
       dropdown?.classList.add("is-hidden");
       userBtn?.setAttribute("aria-expanded", "false");
@@ -395,6 +409,8 @@
         await setDoc(ref, {
           uid: user.uid,
           email: user.email || null,
+          username: extra.username || null,
+          balanceCents: 0,
           createdAt: new Date(),
           ...extra
         });
@@ -403,93 +419,28 @@
       }
     }
 
-    // ---------------- Username resolver ----------------
-    async function getUsernameForUser(user) {
-      // 1) Firestore username
+    async function getUserDoc(user) {
       try {
         const ref = doc(db, "users", user.uid);
         const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          if (data.username && String(data.username).trim().length > 0) {
-            return data.username.trim();
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
+        if (snap.exists()) return snap.data();
+      } catch (e) {}
+      return null;
+    }
 
-      // 2) Provider display name (Google)
-      if (user.displayName && user.displayName.trim().length > 0) {
-        return user.displayName.trim();
-      }
-
-      // 3) fallback: email prefix
+    async function getUsernameForUser(user) {
+      const data = await getUserDoc(user);
+      if (data?.username && String(data.username).trim()) return String(data.username).trim();
+      if (user.displayName && user.displayName.trim()) return user.displayName.trim();
       if (user.email) return user.email.split("@")[0];
-
       return "Account";
     }
 
-    // ---------------- Navbar state ----------------
-    function setNavLoggedOut() {
-      loggedOutWrap?.classList.remove("is-hidden");
-      loggedInWrap?.classList.add("is-hidden");
-      forceCloseUserUI();
-      if (navUsername) navUsername.textContent = "Account";
+    async function getBalanceForUser(user) {
+      const data = await getUserDoc(user);
+      const cents = data?.balanceCents ?? 0;
+      return Number(cents) || 0;
     }
-
-    function setNavLoggedIn(usernameText = "Account") {
-      loggedOutWrap?.classList.add("is-hidden");
-      loggedInWrap?.classList.remove("is-hidden");
-      if (navUsername) navUsername.textContent = usernameText;
-      forceCloseUserUI();
-    }
-
-    // Dropdown toggle
-    userBtn?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdown?.classList.toggle("is-hidden");
-      const expanded = dropdown && !dropdown.classList.contains("is-hidden");
-      userBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!loggedInWrap) return;
-      if (!loggedInWrap.contains(e.target)) forceCloseUserUI();
-    });
-
-    // Account
-    goAccountBtn?.addEventListener("click", () => {
-      window.location.href = "account.html";
-    });
-
-    // Wallet placeholder
-    walletBtn?.addEventListener("click", () => {
-      forceCloseUserUI();
-      showToast("success", "Wallet", "Coming soon.");
-    });
-
-    // Logout
-    logoutBtn?.addEventListener("click", async () => {
-      try {
-        await signOut(auth);
-        forceCloseUserUI();
-        showToast("success", "Signed out", "You’ve been logged out.");
-      } catch (err) {
-        showToast("error", "Logout failed", err.message);
-      }
-    });
-
-    // Live auth state listener
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        setNavLoggedOut();
-        return;
-      }
-      const username = await getUsernameForUser(user);
-      setNavLoggedIn(username);
-    });
 
     // ---------------- Email Register ----------------
     const registerForm = document.getElementById("register-form");
@@ -517,7 +468,6 @@
         forceCloseUserUI();
         registerForm.reset();
         closeModal();
-
         showToast("success", "Account created", `Welcome, ${username}!`);
       } catch (err) {
         showToast("error", "Sign up failed", err.message);
@@ -544,7 +494,6 @@
         forceCloseUserUI();
         loginForm.reset();
         closeModal();
-
         showToast("success", "Signed in", "Welcome back!");
       } catch (err) {
         showToast("error", "Sign in failed", err.message);
@@ -571,7 +520,6 @@
 
         forceCloseUserUI();
         closeModal();
-
         showToast("success", "Signed in", "Signed in with Google.");
       } catch (err) {
         showToast("error", "Google sign-in failed", err.message);
@@ -590,13 +538,11 @@
     togglePhoneBtn?.addEventListener("click", () => {
       phoneArea.classList.toggle("is-hidden");
 
-      // setup recaptcha once
       if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-          size: "normal"
-        });
-
-        window.recaptchaVerifier.render().catch((err) => {
+        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
+        window.recaptchaVerifier.render().then(() => {
+          showToast("success", "Ready", "reCAPTCHA loaded. You can send a code.");
+        }).catch((err) => {
           showToast("error", "reCAPTCHA failed", err.message);
         });
       }
@@ -613,7 +559,7 @@
 
       try {
         if (!window.recaptchaVerifier) {
-          showToast("error", "reCAPTCHA", "Click “Sign in with phone” first.");
+          showToast("error", "reCAPTCHA", "Open 'Sign in with phone' first to load reCAPTCHA.");
           return;
         }
 
@@ -647,13 +593,77 @@
 
         forceCloseUserUI();
         closeModal();
-
         showToast("success", "Signed in", "Signed in with phone.");
       } catch (err) {
         showToast("error", "Verify failed", err.message);
       } finally {
         setLoading(verifyOtpBtn, false);
       }
+    });
+
+    // ---------- Navbar user menu ----------
+    function setNavLoggedOut() {
+      loggedOutWrap?.classList.remove("is-hidden");
+      loggedInWrap?.classList.add("is-hidden");
+      forceCloseUserUI();
+      if (navUsername) navUsername.textContent = "Account";
+      if (navAvatar) navAvatar.textContent = "P";
+      if (navBalance) navBalance.textContent = "$0.00";
+    }
+
+    function setNavLoggedIn(usernameText = "Account", balanceText = "$0.00") {
+      loggedOutWrap?.classList.add("is-hidden");
+      loggedInWrap?.classList.remove("is-hidden");
+      if (navUsername) navUsername.textContent = usernameText;
+      if (navAvatar) navAvatar.textContent = avatarLetter(usernameText);
+      if (navBalance) navBalance.textContent = balanceText;
+    }
+
+    // Dropdown toggle
+    userBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown?.classList.toggle("is-hidden");
+      const expanded = dropdown && !dropdown.classList.contains("is-hidden");
+      userBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", (e) => {
+      if (!loggedInWrap) return;
+      if (!loggedInWrap.contains(e.target)) forceCloseUserUI();
+    });
+
+    // Account button
+    goAccountBtn?.addEventListener("click", () => {
+      window.location.href = "account.html";
+    });
+
+    // Balance chip (coming soon)
+    balanceChip?.addEventListener("click", () => {
+      showToast("success", "Wallet", "Coming soon.");
+      forceCloseUserUI();
+    });
+
+    // Logout
+    logoutBtn?.addEventListener("click", async () => {
+      try {
+        await signOut(auth);
+        forceCloseUserUI();
+      } catch (err) {
+        showToast("error", "Logout failed", err.message);
+      }
+    });
+
+    // Live auth state listener (username + balance)
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        setNavLoggedOut();
+        return;
+      }
+      const username = await getUsernameForUser(user);
+      const cents = await getBalanceForUser(user);
+      setNavLoggedIn(username, formatUSDFromCents(cents));
+      forceCloseUserUI();
     });
   </script>
 </body>
