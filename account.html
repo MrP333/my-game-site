@@ -2,15 +2,252 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Account | PaigonAi</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Account • PaigonAi</title>
+
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="account.css" />
 </head>
+
 <body>
-  <main class="main-content">
-    <h1>Account</h1>
-    <p>Settings / deletion / wallet coming soon.</p>
-    <a class="game-card" href="index.html" style="max-width:260px;margin:24px auto;">← Back to Home</a>
+  <!-- Navbar -->
+  <header class="navbar">
+    <a href="index.html" class="logo">PaigonAi</a>
+
+    <nav>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#">Games</a></li>
+        <li><a href="#">Leaderboard</a></li>
+      </ul>
+    </nav>
+
+    <!-- Right side: shows username + dropdown -->
+    <div class="user-menu" id="auth-logged-in">
+      <button class="user-button" id="user-button" type="button" aria-haspopup="true" aria-expanded="false">
+        <span id="nav-username">Account</span>
+        <span class="chev">▾</span>
+      </button>
+
+      <div class="dropdown is-hidden" id="user-dropdown" role="menu" aria-label="User menu">
+        <button class="dropdown-item" id="go-home" type="button" role="menuitem">Home</button>
+        <button class="dropdown-item" id="logout" type="button" role="menuitem">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page -->
+  <main class="account-wrap">
+    <section class="account-card">
+      <div class="account-head">
+        <div class="avatar" id="avatar">P</div>
+        <div class="account-meta">
+          <h1 class="account-title" id="account-title">Account</h1>
+          <div class="account-sub" id="account-sub">Loading…</div>
+        </div>
+      </div>
+
+      <div class="account-grid">
+        <div class="panel">
+          <h2>Profile</h2>
+          <div class="row">
+            <div class="label">Username</div>
+            <div class="value" id="profile-username">—</div>
+          </div>
+          <div class="row">
+            <div class="label">Email</div>
+            <div class="value" id="profile-email">—</div>
+          </div>
+          <div class="row">
+            <div class="label">Provider</div>
+            <div class="value" id="profile-provider">—</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Wallet</h2>
+          <p class="muted">
+            Coming soon. This is where balance, deposits, withdrawals, and rewards will live.
+          </p>
+          <button class="btn btn-primary" id="wallet-soon" type="button">Open Wallet (Soon)</button>
+        </div>
+
+        <div class="panel danger">
+          <h2>Account Actions</h2>
+          <p class="muted">
+            For now we’ll only support logout here. Later we can add deletion + settings safely.
+          </p>
+          <button class="btn btn-ghost" id="logout-2" type="button">Logout</button>
+        </div>
+      </div>
+    </section>
   </main>
+
+  <!-- Toasts -->
+  <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module">
+    // ---------- Toast helper ----------
+    function showToast(type, title, msg, ms = 2200) {
+      const root = document.getElementById("toast-root");
+      if (!root) return;
+
+      const el = document.createElement("div");
+      el.className = `toast ${type}`;
+      el.innerHTML = `
+        <div class="title">${title}</div>
+        <div class="msg">${msg}</div>
+      `;
+
+      root.appendChild(el);
+      requestAnimationFrame(() => el.classList.add("show"));
+
+      setTimeout(() => {
+        el.classList.remove("show");
+        setTimeout(() => el.remove(), 250);
+      }, ms);
+    }
+
+    // ---------------- Firebase Imports ----------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      getDoc
+    } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    // ---------------- Firebase Config ----------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyAIEYryVjB1gX2bzXWERNI0udfjHXuXwzc",
+      authDomain: "paigonco.firebaseapp.com",
+      projectId: "paigonco",
+      storageBucket: "paigonco.appspot.com",
+      messagingSenderId: "879434208536",
+      appId: "1:879434208536:web:5ff633fc0534c3f1d73a6d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ---------------- Elements ----------------
+    const navUsername = document.getElementById("nav-username");
+    const avatarEl = document.getElementById("avatar");
+
+    const accountTitle = document.getElementById("account-title");
+    const accountSub = document.getElementById("account-sub");
+
+    const pUsername = document.getElementById("profile-username");
+    const pEmail = document.getElementById("profile-email");
+    const pProvider = document.getElementById("profile-provider");
+
+    const userBtn = document.getElementById("user-button");
+    const dropdown = document.getElementById("user-dropdown");
+    const goHome = document.getElementById("go-home");
+    const logoutBtn = document.getElementById("logout");
+    const logoutBtn2 = document.getElementById("logout-2");
+    const walletSoon = document.getElementById("wallet-soon");
+
+    function forceCloseUserUI() {
+      dropdown?.classList.add("is-hidden");
+      userBtn?.setAttribute("aria-expanded", "false");
+    }
+
+    userBtn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown?.classList.toggle("is-hidden");
+      const expanded = dropdown && !dropdown.classList.contains("is-hidden");
+      userBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!dropdown) return;
+      if (!document.getElementById("auth-logged-in").contains(e.target)) forceCloseUserUI();
+    });
+
+    goHome?.addEventListener("click", () => window.location.href = "index.html");
+
+    walletSoon?.addEventListener("click", () => {
+      showToast("success", "Wallet", "Coming soon.");
+    });
+
+    async function doLogout() {
+      try {
+        await signOut(auth);
+        showToast("success", "Signed out", "You’ve been logged out.");
+        setTimeout(() => window.location.href = "index.html", 350);
+      } catch (err) {
+        showToast("error", "Logout failed", err.message);
+      }
+    }
+
+    logoutBtn?.addEventListener("click", doLogout);
+    logoutBtn2?.addEventListener("click", doLogout);
+
+    // ---------------- Username resolver ----------------
+    async function getUsernameForUser(user) {
+      try {
+        const ref = doc(db, "users", user.uid);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          if (data.username && String(data.username).trim().length > 0) {
+            return data.username.trim();
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      if (user.displayName && user.displayName.trim().length > 0) return user.displayName.trim();
+      if (user.email) return user.email.split("@")[0];
+      return "Account";
+    }
+
+    function providerLabel(user) {
+      const p = user.providerData?.[0]?.providerId || "unknown";
+      if (p === "password") return "Email/Password";
+      if (p === "google.com") return "Google";
+      if (p === "phone") return "Phone";
+      return p;
+    }
+
+    function setAvatarLetter(nameOrEmail) {
+      const ch = (nameOrEmail || "P").trim()[0]?.toUpperCase() || "P";
+      avatarEl.textContent = ch;
+    }
+
+    // ---------------- Protect page ----------------
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        // Not logged in → send them home
+        window.location.href = "index.html";
+        return;
+      }
+
+      const username = await getUsernameForUser(user);
+
+      // Navbar
+      navUsername.textContent = username;
+
+      // Page header
+      accountTitle.textContent = username;
+      accountSub.textContent = "Your profile hub (more coming soon).";
+      setAvatarLetter(username || user.email);
+
+      // Profile panel
+      pUsername.textContent = username;
+      pEmail.textContent = user.email || "(no email on this account)";
+      pProvider.textContent = providerLabel(user);
+
+      forceCloseUserUI();
+    });
+  </script>
 </body>
 </html>
